@@ -8,24 +8,26 @@
 </head>
 <body>
     <header class="main-header">
-        <h1>PicoDrone Station</h1>
-        <nav class="tab-navigation">
-            <button class="tab-btn active" data-tab="tab-telemetria">Telemetría</button>
-            <button class="tab-btn" data-tab="tab-arquitectura">Arquitectura</button>
-            <button class="tab-btn" data-tab="tab-hardware">Hardware</button>
-        </nav>
-        <div class="controls">
-            <button id="btnConectar">Conectar</button>
-            <input type="text" id="inputEnviar" placeholder="Comando...">
-            <button id="btnEnviar">Enviar</button>
-        </div>
-    </header>
+    <h1>PicoDrone Station</h1>
+    <nav class="tab-navigation">
+        <button class="tab-btn active" data-tab="tab-telemetria">Telemetría</button>
+        <button class="tab-btn" data-tab="tab-arquitectura">Arquitectura</button>
+        <button class="tab-btn" data-tab="tab-hardware">Hardware</button>
+        <a href="https://github.com/lloysmaster/rp2040-drone" target="_blank" class="git-link">
+            <button class="tab-btn git-btn">GitHub 📂</button>
+        </a>
+    </nav>
+    <div class="controls">
+        <button id="btnConectar">Conectar</button>
+        <input type="text" id="inputEnviar" placeholder="Comando...">
+        <button id="btnEnviar">Enviar</button>
+    </div>
+</header>
 
     <main class="tab-container">
         <section id="tab-telemetria" class="tab-content active">
     <div class="dashboard-grid">
-        <button id="toggle-calib" class="floating-btn">⚙️ Configurar PID</button>
-
+        
         <section class="panel left-panel">
             <div id="terminal"></div>
             <div class="canvas-container">
@@ -36,9 +38,11 @@
         <section class="panel right-panel">
             <div id="container3d"></div>
             
-            <div id="side-calibracion" class="side-panel">
-                <h3>Ajuste PID & Comandos</h3>
-                <div class="control-group">
+            <div class="pid-settings-bar">
+                <div class="pid-header">
+                    <h3>Configuración de Vuelo</h3>
+                </div>
+                <div class="pid-controls-horizontal">
                     <div class="slider-item">
                         <label>P: <span id="valP">1.5</span></label>
                         <input type="range" id="sliderP" min="0" max="10" step="0.1" value="1.5">
@@ -51,13 +55,14 @@
                         <label>D: <span id="valD">0.05</span></label>
                         <input type="range" id="sliderD" min="0" max="2" step="0.001" value="0.05">
                     </div>
-                </div>
-                <div class="button-grid">
-                    <button class="cmd-btn" onclick="enviarComando('S0')">Status PID</button>
-                    <button class="cmd-btn warn" onclick="confirmarMotor()">Test Motor</button>
+                    <div class="button-group-inline">
+                        <button class="cmd-btn" onclick="enviarComando('S0')">Status</button>
+                        <button class="cmd-btn warn" onclick="confirmarMotor()">Test Motor</button>
+                    </div>
                 </div>
             </div>
         </section>
+
     </div>
 </section>
 

@@ -139,39 +139,7 @@ input[type="range"] { flex-grow: 1; accent-color: #4bc0c0; }
 .cmd-btn.warn { border-color: #ff6384; }
 .cmd-btn.warn:hover { background: #ff6384; }
 
-/* Botón flotante para abrir el panel */
-.floating-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-    background: #444;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
 
-/* Panel lateral semi-transparente sobre el 3D */
-.side-panel {
-    position: absolute;
-    top: 50px;
-    right: 10px;
-    width: 250px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    display: none; /* Se activa con JS */
-    z-index: 9;
-    color: white;
-}
-
-.side-panel.active {
-    display: block;
-}
 
 .slider-item {
     margin-bottom: 15px;
@@ -179,4 +147,78 @@ input[type="range"] { flex-grow: 1; accent-color: #4bc0c0; }
 
 .slider-item input {
     width: 100%;
+}
+/* Asegura que el link no rompa el alineamiento flex */
+.git-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Estilo específico para el botón de GitHub */
+.git-btn {
+    background: #24292e !important; /* Color oscuro GitHub */
+    color: #00ff88 !important;      /* Verde neón para que resalte */
+    border: 1px solid #444 !important;
+    font-weight: bold;
+    margin-left: 5px; /* Separación de las pestañas */
+}
+
+.git-btn:hover {
+    background: #333 !important;
+    border-color: #00ff88 !important;
+}
+
+/* Ajuste extra para que el tab-navigation no se amontone */
+.tab-navigation {
+    display: flex;
+    align-items: center; /* Alinea botones y links al centro vertical */
+    gap: 5px;
+    margin: 0 15px;
+}
+
+/* Elimina o comenta .floating-btn y .side-panel del CSS anterior */
+
+.pid-settings-bar {
+    background: #1a1a1a;
+    border-top: 2px solid #333;
+    padding: 10px 15px;
+    border-radius: 0 0 5px 5px;
+}
+
+.pid-header h3 {
+    font-size: 0.8rem;
+    color: #4bc0c0;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.pid-controls-horizontal {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.pid-controls-horizontal .slider-item {
+    flex: 1;
+    min-width: 150px;
+    margin: 0;
+}
+
+.button-group-inline {
+    display: flex;
+    gap: 8px;
+}
+
+.button-group-inline .cmd-btn {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+}
+
+/* Ajuste para que el 3D no se achique demasiado */
+#container3d {
+    flex-grow: 1;
+    min-height: 400px; /* Asegura espacio para el modelo */
 }

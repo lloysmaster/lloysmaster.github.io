@@ -8,7 +8,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // 1. CONFIGURACIÓN DE LA GRÁFICA MULTI-EJE
 document.addEventListener("DOMContentLoaded", () => {
     const ctx = document.getElementById("graficaRealTime").getContext("2d");
-    
+    setupSlider('sliderP', 'P', 'valP');
+    setupSlider('sliderI', 'I', 'valI');
+    setupSlider('sliderD', 'D', 'valD');
     miGrafica = new Chart(ctx, {
         type: "line",
         data: {
@@ -106,19 +108,7 @@ window.confirmarMotor = () => {
         enviarComando('M' + valor);
     }
 }
-const btnToggle = document.getElementById('toggle-calib');
-    const panelCalib = document.getElementById('side-calibracion');
 
-    btnToggle.addEventListener('click', () => {
-        panelCalib.classList.toggle('active');
-        btnToggle.textContent = panelCalib.classList.contains('active') ? '✖ Cerrar' : '⚙️ Configurar PID';
-    });
-
-    // Asegúrate de que los sliders sigan funcionando:
-    setupSlider('sliderP', 'P', 'valP');
-    setupSlider('sliderI', 'I', 'valI');
-    setupSlider('sliderD', 'D', 'valD');
-});
 
 // Variables para guardar los objetivos (donde queremos llegar)
 let targetRotation = { x: 0, y: 0, z: 0 };
