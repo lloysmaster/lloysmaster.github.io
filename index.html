@@ -63,14 +63,96 @@
 
         <section id="tab-arquitectura" class="tab-content">
             <div class="panel docs">
-                <h2>Arquitectura del Firmware (RP2040)</h2>
-                <p>El núcleo de PicoDrone se basa en un loop de control PID ejecutándose en el Core 0, mientras que la telemetría se despacha por el Core 1.</p>
+                <h2>Arquitectura del Firmware (RP2040 Dual-Core)</h2>
+                <p>El firmware aprovecha la arquitectura de doble núcleo para separar las tareas de tiempo real crítico de las comunicaciones.</p>
+                
+                <div class="grid-docs">
+                    <div class="doc-card">
+                        <h3>Core 0: Control Crítico</h3>
+                        <ul>
+                            <li><strong>Loop de Control:</strong> Ejecución del PID y Mezclador (Mixer).</li>
+                            <li><strong>Sensores:</strong> Lectura del MPU6500 vía SPI a alta velocidad.</li>
+                            <li><strong>Salida Motores:</strong> Protocolo DShot300 implementado mediante PIO.</li>
+                            <li><strong>Filtros:</strong> Aplicación de filtros EMA para reducción de ruido en gyro.</li>
+                        </ul>
+                    </div>
+                    <div class="doc-card">
+                        <h3>Core 1: Gestión y Telemetría</h3>
+                        <ul>
+                            <li><strong>Radio:</strong> Recepción de señal PPM mediante PIO y sincronización con Core 0.</li>
+                            <li><strong>Consola:</strong> Manejo de comandos seriales para ajuste de PIDs en caliente.</li>
+                            <li><strong>Telemetría:</strong> Despacho de datos por usbSerial (~25Hz).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Objetivos de Aprendizaje y Optimización</h3>
                 <ul>
-                    <li><strong>Frecuencia de muestreo:</strong> 400Hz (IMU)</li>
-                    <li><strong>Protocolo:</strong> Serial @ 115200 baudios.</li>
+                    <li>Implementación de PID en punto fijo (q16.16).</li>
+                    <li>Incremento del lazo de control a 8kHz.</li>
+                    <li>Uso de multiplicaciones rápidas en la ROM del RP2040.</li>
                 </ul>
             </div>
         </section>
+
+        <section id="tab-hardware" class="tab-content">
+    <div class="panel docs">
+        <h2>Hardware: Especificaciones y Conexiones</h2>
+        
+        <div class="grid-docs">
+            <div class="doc-card">
+                <h3>Inventario de Componentes</h3>
+                <table>
+                    <thead>
+                        <tr><th>Pieza</th><th>Modelo</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Controladora</td><td>Raspberry Pi Pico (RP2040)</td><td>✅</td></tr>
+                        <tr><td>IMU (Gyro/Acc)</td><td>MPU6500 (SPI)</td><td>✅</td></tr>
+                        <tr><td>Motores (x4)</td><td>MT2204 2300kv</td><td>✅</td></tr>
+                        <tr><td>Receptor RC</td><td>Futaba R168DF (PPM)</td><td>✅</td></tr>
+                        <tr><td>Batería</td><td>CNHL 1300mAh 3S 130C</td><td>⏳</td></tr>
+                        <tr><td>ESC (x4)</td><td>DShot Compatible</td><td>⏳</td></tr>
+                        <tr><td>Regulador</td><td>5V Step-Down (Switching)</td><td>⏳</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="doc-card">
+                <h3>Pinout del RP2040</h3>
+                <table>
+                    <thead>
+                        <tr><th>Función</th><th>Pin / Periférico</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>SPI SCK/MOSI/MISO</strong></td><td>Pins Config.h (MPU6500)</td></tr>
+                        <tr><td><strong>DShot (Motores)</strong></td><td>MOTOR_BASE_PIN (PIO1)</td></tr>
+                        <tr><td><strong>PPM (Radio)</strong></td><td>PPM_PIN (PIO0)</td></tr>
+                        <tr><td><strong>VCC Input</strong></td><td>Vsys (5V Regulados)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <hr>
+
+        <h3>Análisis de Propulsión (MT2204)</h3>
+        <p>Según las pruebas de rendimiento, estos son los parámetros de operación para el cálculo del Mixer y PID:</p>
+        
+        <ul>
+            <li><strong>Eficiencia:</strong> Máxima con hélices 5045 (6.53 g/W a baja potencia).</li>
+            <li><strong>Empuje Máximo:</strong> 430g por motor con hélices 6x3 @ 13.1A.</li>
+            <li><strong>Seguridad Térmica:</strong> Los motores alcanzan 50°C en ráfagas de máxima potencia; se recomienda monitoreo.</li>
+        </ul>
+
+        <h3>Requisitos del Sistema de Energía</h3>
+        <ul>
+            <li><strong>Entrada:</strong> Soporte hasta 26V (Batería 6S) para futura escalabilidad.</li>
+            <li><strong>Salida:</strong> 5.0V - 5.2V estables para alimentar el RP2040 y el receptor Futaba.</li>
+            <li><strong>Filtrado:</strong> Frecuencia de conmutación > 500 kHz para evitar ruido en las lecturas del giroscopio.</li>
+        </ul>
+    </div>
+</section>
 
         <section id="tab-hardware" class="tab-content">
             <div class="panel docs">
