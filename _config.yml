@@ -1,0 +1,3 @@
+theme: rp2040drone-webSerialMonitor
+title: Web Serial Monitor
+description: monitor serial para el uso de telemetria en drone con rp2040
