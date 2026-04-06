@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicoDrone Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header">
+        <h1>PicoDrone Station</h1>
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="tab-telemetria">Telemetría</button>
+            <button class="tab-btn" data-tab="tab-arquitectura">Arquitectura</button>
+            <button class="tab-btn" data-tab="tab-hardware">Hardware</button>
+        </nav>
+        <div class="controls">
+            <button id="btnConectar">Conectar</button>
+            <input type="text" id="inputEnviar" placeholder="Comando...">
+            <button id="btnEnviar">Enviar</button>
+        </div>
+    </header>
+
+    <main class="tab-container">
+        <section id="tab-telemetria" class="tab-content active">
+    <div class="dashboard-grid">
+        <button id="toggle-calib" class="floating-btn">⚙️ Configurar PID</button>
+
+        <section class="panel left-panel">
+            <div id="terminal"></div>
+            <div class="canvas-container">
+                <canvas id="graficaRealTime"></canvas>
+            </div>
+        </section>
+
+        <section class="panel right-panel">
+            <div id="container3d"></div>
+            
+            <div id="side-calibracion" class="side-panel">
+                <h3>Ajuste PID & Comandos</h3>
+                <div class="control-group">
+                    <div class="slider-item">
+                        <label>P: <span id="valP">1.5</span></label>
+                        <input type="range" id="sliderP" min="0" max="10" step="0.1" value="1.5">
+                    </div>
+                    <div class="slider-item">
+                        <label>I: <span id="valI">0.0</span></label>
+                        <input type="range" id="sliderI" min="0" max="5" step="0.01" value="0">
+                    </div>
+                    <div class="slider-item">
+                        <label>D: <span id="valD">0.05</span></label>
+                        <input type="range" id="sliderD" min="0" max="2" step="0.001" value="0.05">
+                    </div>
+                </div>
+                <div class="button-grid">
+                    <button class="cmd-btn" onclick="enviarComando('S0')">Status PID</button>
+                    <button class="cmd-btn warn" onclick="confirmarMotor()">Test Motor</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+        <section id="tab-arquitectura" class="tab-content">
+            <div class="panel docs">
+                <h2>Arquitectura del Firmware (RP2040)</h2>
+                <p>El núcleo de PicoDrone se basa en un loop de control PID ejecutándose en el Core 0, mientras que la telemetría se despacha por el Core 1.</p>
+                <ul>
+                    <li><strong>Frecuencia de muestreo:</strong> 400Hz (IMU)</li>
+                    <li><strong>Protocolo:</strong> Serial @ 115200 baudios.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="tab-hardware" class="tab-content">
+            <div class="panel docs">
+                <h2>Pinout & Conexiones</h2>
+                
+                <table>
+                    <tr><th>Componente</th><th>Pin RP2040</th></tr>
+                    <tr><td>MPU6050 SDA</td><td>GP4</td></tr>
+                    <tr><td>MPU6050 SCL</td><td>GP5</td></tr>
+                    <tr><td>ESC 1 (PWM)</td><td>GP10</td></tr>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="importmap">
+    {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

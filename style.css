@@ -1,0 +1,182 @@
+/* Reset básico para evitar scroll innecesario */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: #121212; 
+    color: white; 
+    height: 100vh; /* Ocupa el 100% del alto de pantalla */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prohíbe el scroll global */
+    padding: 10px;
+}
+
+/* Encabezado compacto */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    padding: 0 10px;
+    border-bottom: 1px solid #333;
+}
+
+h1 { font-size: 1.2rem; color: #00ff88; }
+
+.controls input {
+    background: #252525;
+    border: 1px solid #444;
+    color: white;
+    padding: 5px;
+}
+
+/* Grilla Principal */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* Izquierda más estrecha, Derecha (3D) más ancha */
+    gap: 10px;
+    flex-grow: 1; /* Ocupa el resto del espacio vertical */
+    padding-top: 10px;
+    min-height: 0; /* Importante para que los hijos respeten el alto del padre */
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+}
+
+/* Consola de Datos Serial */
+#terminal { 
+    background: #1a1a1a;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    height: 300px;
+    overflow-y: auto;
+    white-space: pre; /* Mantiene el formato de las líneas */
+    padding: 10px;
+    font-size: 12px;
+    border: 1px solid #333;
+}
+
+/* Contenedor y Gráfica Chart.js */
+.canvas-container {
+    height: 40%; /* Ajusta esto según prefieras la gráfica vs la consola */
+    background: #1a1a1a;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/* Contenedor Visualización 3D */
+#container3d { 
+    flex: 1;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 5px;
+    position: relative;
+}
+
+canvas { width: 100% !important; height: 100% !important; }
+
+/* Ocultar pestañas inactivas */
+.tab-content {
+    display: none;
+    padding: 20px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Estilo de los botones */
+.tab-navigation {
+    display: flex;
+    gap: 10px;
+    margin: 0 20px;
+}
+
+.tab-btn {
+    background: #333;
+    color: #ccc;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+}
+
+.tab-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+/* Ajustes para la tabla y docs */
+.docs {
+    background: #1a1a1a;
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+.tab-container{
+     min-height: 10vh;
+
+}
+.tab-telemetria{
+    min-width: 10vh;
+}
+.control-group { background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.slider-item { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
+.slider-item label { min-width: 80px; font-family: monospace; color: #4bc0c0; }
+input[type="range"] { flex-grow: 1; accent-color: #4bc0c0; }
+
+.button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+.cmd-btn { padding: 10px; background: #333; border: 1px solid #4bc0c0; color: white; cursor: pointer; transition: 0.2s; }
+.cmd-btn:hover { background: #4bc0c0; color: #000; }
+.cmd-btn.warn { border-color: #ff6384; }
+.cmd-btn.warn:hover { background: #ff6384; }
+
+/* Botón flotante para abrir el panel */
+.floating-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Panel lateral semi-transparente sobre el 3D */
+.side-panel {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 250px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    display: none; /* Se activa con JS */
+    z-index: 9;
+    color: white;
+}
+
+.side-panel.active {
+    display: block;
+}
+
+.slider-item {
+    margin-bottom: 15px;
+}
+
+.slider-item input {
+    width: 100%;
+}
