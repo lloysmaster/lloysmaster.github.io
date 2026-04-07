@@ -38,11 +38,9 @@ h1 { font-size: 1.2rem; color: #00ff88; }
 /* Grilla Principal */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1.5fr; /* Izquierda más estrecha, Derecha (3D) más ancha */
-    gap: 10px;
-    flex-grow: 1; /* Ocupa el resto del espacio vertical */
-    padding-top: 10px;
-    min-height: 0; /* Importante para que los hijos respeten el alto del padre */
+    grid-template-columns: 1fr 1.5fr;
+    gap: 15px;
+    height: 100%; /* Ocupa el alto del tab-content */
 }
 
 .panel {
@@ -76,9 +74,9 @@ h1 { font-size: 1.2rem; color: #00ff88; }
 /* Contenedor Visualización 3D */
 #container3d { 
     flex: 1;
+    min-height: 350px; /* Dale un respiro al renderizador */
     background: #000;
     border: 1px solid #333;
-    border-radius: 5px;
     position: relative;
 }
 
@@ -91,7 +89,9 @@ canvas { width: 100% !important; height: 100% !important; }
 }
 
 .tab-content.active {
-    display: block;
+    display: flex; /* Cambiado de block a flex */
+    flex-direction: column;
+    height: 100%;
 }
 
 /* Estilo de los botones */
@@ -121,13 +121,14 @@ canvas { width: 100% !important; height: 100% !important; }
     color: #e0e0e0;
     line-height: 1.6;
 }
-.tab-container{
-     min-height: 10vh;
+.tab-container {
+    flex: 1; 
+    overflow-y: auto;
+    position: relative; /* Importante para los hijos con altura % */
+    display: flex;
+    flex-direction: column;
+}
 
-}
-.tab-telemetria{
-    min-width: 10vh;
-}
 .control-group { background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
 .slider-item { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
 .slider-item label { min-width: 80px; font-family: monospace; color: #4bc0c0; }
@@ -221,4 +222,75 @@ input[type="range"] { flex-grow: 1; accent-color: #4bc0c0; }
 #container3d {
     flex-grow: 1;
     min-height: 400px; /* Asegura espacio para el modelo */
+}
+
+.main-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    font-size: 0.75rem;
+    color: #888;
+    height: 30px; /* Altura fija pequeña */
+    height: 25px; /* Un poco más delgado aún */
+    flex-shrink: 0; /* Prohíbe que el footer se achique si el contenido de arriba es muy grande */
+    padding: 0 15px;
+    background: #0a0a0a;
+    line-height: 25px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-link {
+    color: #00ff88;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+
+.footer-link:hover {
+    color: white;
+    text-shadow: 0 0 5px #00ff88;
+}
+
+.footer-icon {
+    width: 14px;
+    filter: invert(1); /* Hace el icono de GitHub blanco */
+}
+
+.separator {
+    color: #444;
+}
+
+/* Indicador de estado (opcional, para toque pro) */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-indicator .dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff88;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #00ff88;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
 }
