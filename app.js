@@ -73,7 +73,7 @@ function init3D() {
     // --- ESCENA PRINCIPAL (Animada) ---
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 3, 6);
+    camera.position.set(0, 1, 6);
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
@@ -81,7 +81,7 @@ function init3D() {
     // --- ESCENA ESTÁTICA ---
     staticScene = new THREE.Scene();
     staticCamera = new THREE.PerspectiveCamera(75, staticContainer.clientWidth / staticContainer.clientHeight, 0.1, 1000);
-    staticCamera.position.set(0, 4, 7); // Un poco más lejos para verlo completo
+    staticCamera.position.set(0, 3.5, 4); // Un poco más lejos para verlo completo
     staticCamera.lookAt(0, 0, 0);
     staticRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     staticRenderer.setSize(staticContainer.clientWidth, staticContainer.clientHeight);
@@ -114,15 +114,25 @@ function init3D() {
     loader.load('./drone.glb', (gltf) => {
         // Modelo principal
         droneModel = gltf.scene;
-        droneModel.scale.set(200, 200, 200);
+        const box = new THREE.Box3().setFromObject(droneModel);
+    const center = box.getCenter(new THREE.Vector3());
+    droneModel.position.sub(center); // Mueve el modelo para que su centro sea 0,0,0
+    
+    // Crear un contenedor para que el desplazamiento anterior no afecte el movimiento
+    const wrapper = new THREE.Group();
+    wrapper.add(droneModel);
+    scene.add(wrapper);
+    
+    droneModel = wrapper; // Ahora droneModel es el grupo centrado
+    droneModel.scale.set(200, 200, 200);
         scene.add(droneModel);
-
+        
         // Clonar para el modelo estático
         staticDroneModel = droneModel.clone();
         staticScene.add(staticDroneModel);
 
         // Posicionar y agregar esferas a ambos
-        const pos = { x: 0.009, z: 0.009, y: 0.001 };
+        const pos = { x: 0.009, z: 0.009, y: -0.001 };
         const setupMotores = (model, visuales) => {
             visuales.m1.position.set(pos.x, pos.y, pos.z);
             visuales.m2.position.set(-pos.x, pos.y, pos.z);
@@ -151,37 +161,62 @@ function init3D() {
 // --- 6. PROCESAMIENTO DE DATOS ---
 function procesarLinea(linea) {
     const cleanLine = linea.trim();
-    if (!cleanLine.startsWith('$')) return;
+    if (!cleanLine) return;
 
-    const valoresStr = cleanLine.substring(1).split(',');
-    if (valoresStr.length === 8) {
-        const [r, p, y, m1, m2, m3, m4, thr] = valoresStr.map(parseFloat);
-        const toRad = Math.PI / 180;
+    // --- CASO 1: TELEMETRÍA (Prefijo $) ---
+    if (cleanLine.startsWith('$')) {
+        const valoresStr = cleanLine.substring(1).split(',');
+        if (valoresStr.length === 8) {
+            const [r, p, y, m1, m2, m3, m4, thr] = valoresStr.map(parseFloat);
+            const toRad = Math.PI / 180;
 
-        targetRotation.z = r * toRad; 
-        targetRotation.x = p * toRad; 
-        targetRotation.y = y * toRad; 
-        
-        // Actualizar indicadores de motores
-        actualizarColorMotor(visualMotores.m1, m1);
-        actualizarColorMotor(visualMotores.m2, m2);
-        actualizarColorMotor(visualMotores.m3, m3);
-        actualizarColorMotor(visualMotores.m4, m4);
-actualizarColorMotor(staticVisualMotores.m1, m1);
-        actualizarColorMotor(staticVisualMotores.m2, m2);
-        actualizarColorMotor(staticVisualMotores.m3, m3);
-        actualizarColorMotor(staticVisualMotores.m4, m4);
-
-        if (miGrafica) {
-            const valores = [r, p, y, thr];
-            miGrafica.data.datasets.forEach((dataset, i) => {
-                dataset.data.push(valores[i]);
-                if (dataset.data.length > maxPuntos) dataset.data.shift();
+            targetRotation.z = r * toRad; 
+            targetRotation.x = p * toRad; 
+            targetRotation.y = y * toRad; 
+            
+            // Actualizar indicadores de motores
+            [m1, m2, m3, m4].forEach((val, i) => {
+                actualizarColorMotor(visualMotores[`m${i+1}`], val);
+                actualizarColorMotor(staticVisualMotores[`m${i+1}`], val);
             });
+
+            if (miGrafica) {
+                const valores = [r, p, y, thr];
+                miGrafica.data.datasets.forEach((dataset, i) => {
+                    dataset.data.push(valores[i]);
+                    if (dataset.data.length > maxPuntos) dataset.data.shift();
+                });
+            }
         }
+    } 
+    // --- CASO 2: STATUS PID (Prefijo #) ---
+    else if (cleanLine.startsWith('#')) {
+        actualizarUI_PID(cleanLine.substring(1));
     }
 }
+function actualizarUI_PID(data) {
+    const v = data.split(',').map(parseFloat);
+    if (v.length < 9) return;
 
+    // Roll
+    actualizarElemento('sliderRP', 'valRP', v[0]);
+    actualizarElemento('sliderRI', 'valRI', v[1]);
+    actualizarElemento('sliderRD', 'valRD', v[2]);
+    // Pitch
+    actualizarElemento('sliderPP', 'valPP', v[3]);
+    actualizarElemento('sliderPI', 'valPI', v[4]);
+    actualizarElemento('sliderPD', 'valPD', v[5]);
+    // Yaw
+    actualizarElemento('sliderYP', 'valYP', v[6]);
+    actualizarElemento('sliderYI', 'valYI', v[7]);
+    actualizarElemento('sliderYD', 'valYD', v[8]);
+}
+function actualizarElemento(sliderId, textId, valor) {
+    const slider = document.getElementById(sliderId);
+    const text = document.getElementById(textId);
+    if (slider) slider.value = valor;
+    if (text) text.textContent = valor.toFixed(4);
+}
 // Lógica de color proporcional
 function actualizarColorMotor(mesh, valor) {
     if (!mesh) return;
@@ -225,16 +260,29 @@ function initTabs() {
 }
 
 function initControls() {
-    const setupSlider = (id, prefijo, displayId) => {
-        const slider = document.getElementById(id);
-        const display = document.getElementById(displayId);
-        if(!slider) return;
-        slider.addEventListener('input', () => { display.textContent = slider.value; });
-        slider.addEventListener('change', () => { enviarComando(prefijo + slider.value); });
+    document.getElementById("btnRefreshPID")?.addEventListener('click', () => {
+    enviarComando('S'); // Pedir estatus al firmware
+});
+    const bindAxis = (axisPrefix, commandChar) => {
+        ['P', 'I', 'D'].forEach(type => {
+            const id = `slider${axisPrefix}${type}`;
+            const disp = `val${axisPrefix}${type}`;
+            const slider = document.getElementById(id);
+            if (!slider) return;
+
+            slider.addEventListener('input', () => { 
+                document.getElementById(disp).textContent = slider.value; 
+            });
+            // Enviar comando: ej 'RP1.5' (Roll P), 'PI0.1' (Pitch I)
+            slider.addEventListener('change', () => { 
+                enviarComando(`${axisPrefix}${type}${slider.value}`); 
+            });
+        });
     };
-    setupSlider('sliderP', 'P', 'valP');
-    setupSlider('sliderI', 'I', 'valI');
-    setupSlider('sliderD', 'D', 'valD');
+
+    bindAxis('R', 'R'); // Roll
+    bindAxis('P', 'P'); // Pitch
+    bindAxis('Y', 'Y'); // Yaw
     document.getElementById("btnEnviar").onclick = () => {
         const input = document.getElementById("inputEnviar");
         enviarComando(input.value);
@@ -247,6 +295,7 @@ async function conectarSerial() {
     try {
         puerto = await navigator.serial.requestPort();
         await puerto.open({ baudRate: 115200 });
+        setTimeout(() => enviarComando('S'), 1000);
         const textDecoder = new TextDecoderStream();
         puerto.readable.pipeTo(textDecoder.writable);
         const reader = textDecoder.readable

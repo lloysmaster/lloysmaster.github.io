@@ -1,296 +1,299 @@
-/* Reset básico para evitar scroll innecesario */
+:root {
+    --bg-dark: #0a0a0a;
+    --panel-bg: #111111;
+    --accent: #00ff41; /* Verde matriz/militar */
+    --accent-dim: rgba(0, 255, 65, 0.15);
+    --text-main: #a0a0a0;
+    --border: #222222;
+    --danger: #ff0000;
+    --warn: #ffcc00;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background: #121212; 
-    color: white; 
-    height: 100vh; /* Ocupa el 100% del alto de pantalla */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Prohíbe el scroll global */
-    padding: 10px;
+body {
+    font-family: var(--font-mono); /* Cambio a mono para look técnico */
+    background: var(--bg-dark);
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+    /* Efecto de líneas de escaneo sutil (opcional) */
+    background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                      linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    background-size: 100% 4px, 3px 100%;
 }
 
-/* Encabezado compacto */
+/* --- HEADER --- */
 .main-header {
+    background: #000;
+    padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 50px;
-    padding: 0 10px;
-    border-bottom: 1px solid #333;
-}
-
-h1 { font-size: 1.2rem; color: #00ff88; }
-
-.controls input {
-    background: #252525;
-    border: 1px solid #444;
-    color: white;
-    padding: 5px;
-}
-
-/* Grilla Principal */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 15px;
-    height: 100%; /* Ocupa el alto del tab-content */
-}
-
-.panel {
-    display: flex;
-    flex-direction: column;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
     gap: 10px;
-    min-height: 0;
 }
 
-/* Consola de Datos Serial */
-#terminal { 
-    background: #1a1a1a;
-    color: #00ff00;
-    font-family: 'Courier New', monospace;
-    height: 300px;
-    overflow-y: auto;
-    white-space: pre; /* Mantiene el formato de las líneas */
-    padding: 10px;
-    font-size: 12px;
-    border: 1px solid #333;
+.logo-area h1 {
+    font-size: 1.1rem;
+    color: var(--accent);
 }
 
-/* Contenedor y Gráfica Chart.js */
-.canvas-container {
-    height: 40%; /* Ajusta esto según prefieras la gráfica vs la consola */
-    background: #1a1a1a;
-    border-radius: 5px;
-    padding: 5px;
-}
-
-/* Contenedor Visualización 3D */
-#container3d { 
-    flex: 1;
-    min-height: 350px; /* Dale un respiro al renderizador */
-    background: #000;
-    border: 1px solid #333;
-    position: relative;
-}
-
-canvas { width: 100% !important; height: 100% !important; }
-
-/* Ocultar pestañas inactivas */
-.tab-content {
-    display: none;
-    padding: 20px;
-}
-
-.tab-content.active {
-    display: flex; /* Cambiado de block a flex */
-    flex-direction: column;
-    height: 100%;
-}
-
-/* Estilo de los botones */
 .tab-navigation {
     display: flex;
-    gap: 10px;
-    margin: 0 20px;
+    gap: 5px;
 }
 
 .tab-btn {
-    background: #333;
-    color: #ccc;
+    background: transparent;
     border: none;
-    padding: 10px 15px;
+    color: #888;
+    padding: 8px 15px;
     cursor: pointer;
-    border-radius: 5px 5px 0 0;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
 .tab-btn.active {
-    background: #007bff;
-    color: white;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
-/* Ajustes para la tabla y docs */
-.docs {
-    background: #1a1a1a;
-    color: #e0e0e0;
-    line-height: 1.6;
+.header-controls {
+    display: flex;
+    gap: 10px;
 }
-.tab-container {
-    flex: 1; 
+
+.input-group {
+    border-radius: 0;
+    border: 1px solid var(--border);
+    background: #000;
+}
+
+.input-group input {
+    color: var(--accent);
+    font-family: var(--font-mono);
+}
+input[type="range"] {
+    appearance: none;
+    background: #222;
+    height: 2px;
+}
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 10px;
+    height: 18px;
+    background: var(--accent);
+    cursor: pointer;
+    border-radius: 0;
+}
+
+/* --- GRID PRINCIPAL --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+    height: calc(100vh - 100px); /* Ajuste para header y footer */
+}
+
+/* Estilo de los Paneles */
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 0; /* Ángulos rectos */
+    position: relative;
+}
+.panel::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 10px; height: 10px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+}
+
+.panel-header {
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+}
+
+/* 3D Visualizer */
+.drone-views-container {
+    display: flex;
+    flex: 1;
+    min-height: 250px; /* Asegura espacio para el canvas */
+}
+
+.view-box {
+    flex: 1;
+    position: relative;
+    border-right: 1px solid var(--border);
+}
+
+.view-box h4 {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    z-index: 10;
+    font-size: 0.7rem;
+    color: #666;
+}
+
+#container3d, #staticContainer3d {
+    width: 100%;
+    height: 100%;
+    min-height: 200px; /* Evita que el contenedor desaparezca en móviles */
+    display: block;
+}
+
+/* Terminal */
+#terminal {
+    flex: 1;
+    background: #050505;
+    color: #00ff00;
+    font-family: 'Consolas', monospace;
+    padding: 10px;
+    font-size: 11px;
     overflow-y: auto;
-    position: relative; /* Importante para los hijos con altura % */
+}
+
+/* PID Settings */
+.pid-panel {
+    grid-column: span 1;
+    padding: 10px;
+}
+
+.pid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pid-grid-expanded {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pid-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.slider-group {
+    display: flex;
+    gap: 15px;
+}
+
+.slider-group label {
+    flex: 1;
+    font-size: 11px;
     display: flex;
     flex-direction: column;
 }
 
-.control-group { background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-.slider-item { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
-.slider-item label { min-width: 80px; font-family: monospace; color: #4bc0c0; }
-input[type="range"] { flex-grow: 1; accent-color: #4bc0c0; }
-
-.button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
-.cmd-btn { padding: 10px; background: #333; border: 1px solid #4bc0c0; color: white; cursor: pointer; transition: 0.2s; }
-.cmd-btn:hover { background: #4bc0c0; color: #000; }
-.cmd-btn.warn { border-color: #ff6384; }
-.cmd-btn.warn:hover { background: #ff6384; }
-
-
-
-.slider-item {
-    margin-bottom: 15px;
-}
-
-.slider-item input {
-    width: 100%;
-}
-/* Asegura que el link no rompa el alineamiento flex */
-.git-link {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-}
-
-/* Estilo específico para el botón de GitHub */
-.git-btn {
-    background: #24292e !important; /* Color oscuro GitHub */
-    color: #00ff88 !important;      /* Verde neón para que resalte */
-    border: 1px solid #444 !important;
-    font-weight: bold;
-    margin-left: 5px; /* Separación de las pestañas */
-}
-
-.git-btn:hover {
-    background: #333 !important;
-    border-color: #00ff88 !important;
-}
-
-/* Ajuste extra para que el tab-navigation no se amontone */
-.tab-navigation {
-    display: flex;
-    align-items: center; /* Alinea botones y links al centro vertical */
-    gap: 5px;
-    margin: 0 15px;
-}
-
-/* Elimina o comenta .floating-btn y .side-panel del CSS anterior */
-
-.pid-settings-bar {
-    background: #1a1a1a;
-    border-top: 2px solid #333;
-    padding: 10px 15px;
-    border-radius: 0 0 5px 5px;
-}
-
-.pid-header h3 {
-    font-size: 0.8rem;
-    color: #4bc0c0;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-}
-
-.pid-controls-horizontal {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.pid-controls-horizontal .slider-item {
-    flex: 1;
-    min-width: 150px;
-    margin: 0;
-}
-
-.button-group-inline {
-    display: flex;
-    gap: 8px;
-}
-
-.button-group-inline .cmd-btn {
-    padding: 5px 12px;
-    font-size: 0.75rem;
-}
-
-/* Ajuste para que el 3D no se achique demasiado */
-#container3d {
-    flex-grow: 1;
-    min-height: 400px; /* Asegura espacio para el modelo */
-}
-
+/* --- FOOTER --- */
 .main-footer {
+    height: 30px;
+    background: #000;
+    border-top: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 15px;
-    background: #1a1a1a;
-    border-top: 1px solid #333;
-    font-size: 0.75rem;
-    color: #888;
-    height: 30px; /* Altura fija pequeña */
-    height: 25px; /* Un poco más delgado aún */
-    flex-shrink: 0; /* Prohíbe que el footer se achique si el contenido de arriba es muy grande */
     padding: 0 15px;
-    background: #0a0a0a;
-    line-height: 25px;
+    font-size: 0.75rem;
 }
 
-.footer-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* --- RESPONSIVIDAD (Media Queries) --- */
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Una sola columna en tablets */
+        grid-template-rows: auto;
+        overflow-y: auto;
+    }
+    
+    body { overflow-y: auto; }
 }
 
-.footer-link {
-    color: #00ff88;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: 0.2s;
+@media (max-width: 600px) {
+    .main-header { justify-content: center; }
+    .tab-navigation { width: 100%; justify-content: center; }
+    .slider-group { flex-direction: column; gap: 5px; }
+    .pid-row { grid-template-columns: 1fr; }
 }
 
-.footer-link:hover {
-    color: white;
-    text-shadow: 0 0 5px #00ff88;
+/* Utilidades */
+.cmd-btn, .connect-btn, #btnEnviar {
+    border-radius: 0;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: bold;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    transition: all 0.2s;
+}
+.cmd-btn:hover {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 10px var(--accent);
+}
+.cmd-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    border-radius: 4px;
 }
 
-.footer-icon {
-    width: 14px;
-    filter: invert(1); /* Hace el icono de GitHub blanco */
-}
-
-.separator {
-    color: #444;
-}
-
-/* Indicador de estado (opcional, para toque pro) */
+.cmd-btn.danger { border-color: var(--danger); color: var(--danger); }
+.cmd-btn.warn { border-color: var(--warn); color: var(--warn); }
 .status-indicator {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-family: monospace;
+    gap: 8px;
+    color: var(--accent); /* Usando el verde militar */
+    font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 0.7rem;
 }
-
-.status-indicator .dot {
+.dot {
     width: 8px;
     height: 8px;
-    background: #00ff88;
-    border-radius: 50%;
-    box-shadow: 0 0 5px #00ff88;
-    animation: pulse 2s infinite;
+    background-color: var(--accent);
+    border-radius: 50%; /* Mantenerla circular */
+    display: inline-block;
+    animation: blink-pulse 1.5s infinite ease-in-out;
 }
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.4; }
-    100% { opacity: 1; }
+@keyframes blink-pulse {
+    0% {
+        opacity: 1;
+        box-shadow: 0 0 0 0px rgba(0, 255, 65, 0.7);
+    }
+    50% {
+        opacity: 0.4;
+        box-shadow: 0 0 0 6px rgba(0, 255, 65, 0);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0px rgba(0, 255, 65, 0);
+    }
 }

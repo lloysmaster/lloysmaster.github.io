@@ -8,194 +8,119 @@
 </head>
 <body>
     <header class="main-header">
-    <h1>PicoDrone Station</h1>
-    <nav class="tab-navigation">
-        <button class="tab-btn active" data-tab="tab-telemetria">Telemetría</button>
-        <button class="tab-btn" data-tab="tab-arquitectura">Arquitectura</button>
-        <button class="tab-btn" data-tab="tab-hardware">Hardware</button>
-        <a href="https://github.com/lloysmaster/rp2040-drone" target="_blank" class="git-link">
-            <button class="tab-btn git-btn">GitHub 📂</button>
-        </a>
-    </nav>
-    <div class="controls">
-        <button id="btnConectar">Conectar</button>
-        <input type="text" id="inputEnviar" placeholder="Comando...">
-        <button id="btnEnviar">Enviar</button>
-    </div>
-</header>
+        <div class="logo-area">
+    <h1 style="letter-spacing: 2px;">PicoDrone <span style="opacity: 0.5;">v1.0.4-STABLE</span></h1>
+    <small style="color: var(--accent); font-size: 0.6rem;">LAT: 31°35'00.0 | LON: 59°53'00.0</small>
+</div>
+        
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="tab-telemetria">Telemetría</button>
+            <a href="https://github.com/lloysmaster/rp2040-drone" target="_blank" class="git-link">
+                <button class="tab-btn git-btn">GitHub 📂</button>
+            </a>
+        </nav>
+
+        <div class="header-controls">
+            <button id="btnConectar" class="connect-btn">Conectar</button>
+            <div class="input-group">
+                <input type="text" id="inputEnviar" placeholder="Comando...">
+                <button id="btnEnviar">Enviar</button>
+            </div>
+        </div>
+    </header>
 
     <main class="tab-container">
         <section id="tab-telemetria" class="tab-content active">
-    <div class="dashboard-grid">
-        
-        <section class="panel left-panel">
-            <div id="terminal"></div>
-            <div class="canvas-container">
-                <canvas id="graficaRealTime"></canvas>
-            </div>
-        </section>
-
-        <section class="panel right-panel">
-            <div id="staticContainer3d" style="width: 100%; height: 200px; background: rgba(0,0,0,0.2); border-bottom: 1px solid #444;"></div>
-            <div id="container3d"></div>
-            
-            <div class="pid-settings-bar">
-                <div class="pid-header">
-                    <h3>Configuración de Vuelo</h3>
-                </div>
-                <div class="pid-controls-horizontal">
-                    <div class="slider-item">
-                        <label>P: <span id="valP">1.5</span></label>
-                        <input type="range" id="sliderP" min="0" max="10" step="0.1" value="1.5">
-                    </div>
-                    <div class="slider-item">
-                        <label>I: <span id="valI">0.0</span></label>
-                        <input type="range" id="sliderI" min="0" max="5" step="0.01" value="0">
-                    </div>
-                    <div class="slider-item">
-                        <label>D: <span id="valD">0.05</span></label>
-                        <input type="range" id="sliderD" min="0" max="2" step="0.001" value="0.05">
-                    </div>
-                    <div class="button-group-inline">
-                        <button class="cmd-btn" onclick="enviarComando('S0')">Status</button>
-                        <button class="cmd-btn warn" onclick="confirmarMotor()">Test Motor</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </div>
-</section>
-
-        <section id="tab-arquitectura" class="tab-content">
-            <div class="panel docs">
-                <h2>Arquitectura del Firmware (RP2040 Dual-Core)</h2>
-                <p>El firmware aprovecha la arquitectura de doble núcleo para separar las tareas de tiempo real crítico de las comunicaciones.</p>
-                
-                <div class="grid-docs">
-                    <div class="doc-card">
-                        <h3>Core 0: Control Crítico</h3>
-                        <ul>
-                            <li><strong>Loop de Control:</strong> Ejecución del PID y Mezclador (Mixer).</li>
-                            <li><strong>Sensores:</strong> Lectura del MPU6500 vía SPI a alta velocidad.</li>
-                            <li><strong>Salida Motores:</strong> Protocolo DShot300 implementado mediante PIO.</li>
-                            <li><strong>Filtros:</strong> Aplicación de filtros EMA para reducción de ruido en gyro.</li>
-                        </ul>
-                    </div>
-                    <div class="doc-card">
-                        <h3>Core 1: Gestión y Telemetría</h3>
-                        <ul>
-                            <li><strong>Radio:</strong> Recepción de señal PPM mediante PIO y sincronización con Core 0.</li>
-                            <li><strong>Consola:</strong> Manejo de comandos seriales para ajuste de PIDs en caliente.</li>
-                            <li><strong>Telemetría:</strong> Despacho de datos por usbSerial (~25Hz).</li>
-                        </ul>
+            <div class="dashboard-grid">
+                <div class="panel visualization-panel">
+                    <div class="panel-header">Visualización de Actitud</div>
+                    <div class="drone-views-container">
+                        <div class="view-box">
+                            <h4>Orientación Real</h4>
+                            <div id="container3d"></div>
+                        </div>
+                        <div class="view-box">
+                            <h4>Estado Motores</h4>
+                            <div id="staticContainer3d"></div>
+                        </div>
                     </div>
                 </div>
 
-                <h3>Objetivos de Aprendizaje y Optimización</h3>
-                <ul>
-                    <li>Implementación de PID en punto fijo (q16.16).</li>
-                    <li>Incremento del lazo de control a 8kHz.</li>
-                    <li>Uso de multiplicaciones rápidas en la ROM del RP2040.</li>
-                </ul>
+                <div class="panel graph-panel">
+                    <div class="panel-header">Gráfica en Tiempo Real</div>
+                    <div class="canvas-container">
+                        <canvas id="graficaRealTime"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel terminal-panel">
+                    <div class="panel-header">Consola Serial</div>
+                    <div id="terminal"></div>
+                </div>
+
+                <div class="panel pid-panel">
+                    <div class="pid-header">
+                        <h3>Configuración de Vuelo (PID)</h3>
+                        <div class="pid-actions">
+                            <button id="btnRefreshPID" class="cmd-btn">Sincronizar</button>
+                            <button class="cmd-btn warn" onclick="">Test Motor</button>
+                            <button class="cmd-btn danger" onclick="">Emergencia</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pid-grid-expanded">
+                        <div class="pid-row">
+                            <span class="axis-label">ROLL</span>
+                            <div class="slider-group">
+                                <label>P: <span id="valRP">0</span> <input type="range" id="sliderRP" min="0" max="10" step="0.1"></label>
+                                <label>I: <span id="valRI">0</span> <input type="range" id="sliderRI" min="0" max="5" step="0.01"></label>
+                                <label>D: <span id="valRD">0</span> <input type="range" id="sliderRD" min="0" max="2" step="0.001"></label>
+                            </div>
+                        </div>
+                        <div class="pid-row">
+                            <span class="axis-label">PITCH</span>
+                            <div class="slider-group">
+                                <label>P: <span id="valPP">0</span> <input type="range" id="sliderPP" min="0" max="10" step="0.1"></label>
+                                <label>I: <span id="valPI">0</span> <input type="range" id="sliderPI" min="0" max="5" step="0.01"></label>
+                                <label>D: <span id="valPD">0</span> <input type="range" id="sliderPD" min="0" max="2" step="0.001"></label>
+                            </div>
+                        </div>
+                        <div class="pid-row">
+                            <span class="axis-label">YAW</span>
+                            <div class="slider-group">
+                                <label>P: <span id="valYP">0</span> <input type="range" id="sliderYP" min="0" max="10" step="0.1"></label>
+                                <label>I: <span id="valYI">0</span> <input type="range" id="sliderYI" min="0" max="5" step="0.01"></label>
+                                <label>D: <span id="valYD">0</span> <input type="range" id="sliderYD" min="0" max="2" step="0.001"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="tab-hardware" class="tab-content">
-    <div class="panel docs">
-        <h2>Hardware: Especificaciones y Conexiones</h2>
-        
-        <div class="grid-docs">
-            <div class="doc-card">
-                <h3>Inventario de Componentes</h3>
-                <table>
-                    <thead>
-                        <tr><th>Pieza</th><th>Modelo</th><th>Estado</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Controladora</td><td>Raspberry Pi Pico (RP2040)</td><td>✅</td></tr>
-                        <tr><td>IMU (Gyro/Acc)</td><td>MPU6500 (SPI)</td><td>✅</td></tr>
-                        <tr><td>Motores (x4)</td><td>MT2204 2300kv</td><td>✅</td></tr>
-                        <tr><td>Receptor RC</td><td>Futaba R168DF (PPM)</td><td>✅</td></tr>
-                        <tr><td>Batería</td><td>CNHL 1300mAh 3S 130C</td><td>⏳</td></tr>
-                        <tr><td>ESC (x4)</td><td>DShot Compatible</td><td>⏳</td></tr>
-                        <tr><td>Regulador</td><td>5V Step-Down (Switching)</td><td>⏳</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        </main>
 
-            <div class="doc-card">
-                <h3>Pinout del RP2040</h3>
-                <table>
-                    <thead>
-                        <tr><th>Función</th><th>Pin / Periférico</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><strong>SPI SCK/MOSI/MISO</strong></td><td>Pins Config.h (MPU6500)</td></tr>
-                        <tr><td><strong>DShot (Motores)</strong></td><td>MOTOR_BASE_PIN (PIO1)</td></tr>
-                        <tr><td><strong>PPM (Radio)</strong></td><td>PPM_PIN (PIO0)</td></tr>
-                        <tr><td><strong>VCC Input</strong></td><td>Vsys (5V Regulados)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <hr>
-
-        <h3>Análisis de Propulsión (MT2204)</h3>
-        <p>Según las pruebas de rendimiento, estos son los parámetros de operación para el cálculo del Mixer y PID:</p>
-        
-        <ul>
-            <li><strong>Eficiencia:</strong> Máxima con hélices 5045 (6.53 g/W a baja potencia).</li>
-            <li><strong>Empuje Máximo:</strong> 430g por motor con hélices 6x3 @ 13.1A.</li>
-            <li><strong>Seguridad Térmica:</strong> Los motores alcanzan 50°C en ráfagas de máxima potencia; se recomienda monitoreo.</li>
-        </ul>
-
-        <h3>Requisitos del Sistema de Energía</h3>
-        <ul>
-            <li><strong>Entrada:</strong> Soporte hasta 26V (Batería 6S) para futura escalabilidad.</li>
-            <li><strong>Salida:</strong> 5.0V - 5.2V estables para alimentar el RP2040 y el receptor Futaba.</li>
-            <li><strong>Filtrado:</strong> Frecuencia de conmutación > 500 kHz para evitar ruido en las lecturas del giroscopio.</li>
-        </ul>
-    </div>
-</section>
-
-        <section id="tab-hardware" class="tab-content">
-            <div class="panel docs">
-                <h2>Pinout & Conexiones</h2>
-                
-                <table>
-                    <tr><th>Componente</th><th>Pin RP2040</th></tr>
-                    <tr><td>MPU6050 SDA</td><td>GP4</td></tr>
-                    <tr><td>MPU6050 SCL</td><td>GP5</td></tr>
-                    <tr><td>ESC 1 (PWM)</td><td>GP10</td></tr>
-                </table>
-            </div>
-        </section>
-    </main>
     <footer class="main-footer">
         <div class="footer-content">
-            <span class="user-tag">Desarrollado por <strong>Facundo Alejo Barrio</strong></span>
+            <span>Desarrollado por <strong>Facundo Alejo Barrio</strong></span>
             <span class="separator">|</span>
-            <a href="https://github.com/lloysmaster" target="_blank" class="footer-link">
-                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub" class="footer-icon">
-                github.com/lloysmaster
-            </a>
+            <a href="#" class="footer-link" onclick="window.open('https://github.com/lloysmaster', '_blank')">github.com/lloysmaster</a>
         </div>
         <div class="status-indicator">
             <span class="dot"></span> RP2040 System Ready
         </div>
     </footer>
-    <script type="importmap">
+<script type="importmap">
     {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
     }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script type="module" src="app.js"></script>
-</body>
+    </body>
 </html>
